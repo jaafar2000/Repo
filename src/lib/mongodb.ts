@@ -1,5 +1,5 @@
 // lib/mongodb.ts
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
@@ -7,16 +7,26 @@ if (!MONGODB_URI) {
   throw new Error("⚠️ Please add your Mongo URI to .env.local");
 }
 
-/* 
- Prevent multiple connections in dev (Next.js hot reload creates many)
-*/
-let cached = (global as any).mongoose;
-
-if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null };
+interface MongooseCache {
+  conn: Mongoose | null;
+  promise: Promise<Mongoose> | null;
 }
 
-export async function connectDB() {
+// Extend NodeJS global type
+declare global {
+  // eslint-disable-next-line no-var
+  var mongooseCache: MongooseCache | undefined;
+}
+
+// Initialize cache on global if not already set
+const cached: MongooseCache = global.mongooseCache ?? {
+  conn: null,
+  promise: null,
+};
+
+global.mongooseCache = cached;
+
+export async function connectDB(): Promise<Mongoose> {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
