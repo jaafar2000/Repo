@@ -14,9 +14,15 @@ export async function POST(req: NextRequest) {
     );
     console.log("Webhook payload:", evt.data);
 
-    if (evt.type === "user.created") {
+    if (evt.type === "user.created" || evt.type === "user.updated" ) {
       console.log("userId:", evt.data.id);
+      console.log(evt.data)
     }
+        if (evt.type === "user.deleted") {
+      console.log("userId:", evt.data.id);
+      console.log(evt.data)
+    }
+  
 
     return new Response("Webhook received", { status: 200 });
   } catch (err) {
