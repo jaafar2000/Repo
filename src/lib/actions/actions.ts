@@ -11,14 +11,14 @@ export const createOrUpdateUser = async (
 ) => {
   try {
     await connectDB();
-    
+
     const user = await User.findOneAndUpdate(
       { clerkId: id },
       {
         $set: {
-          firstName: first_name,
-          lastName: last_name,
-          avatar: image_url,
+          first_name: first_name,
+          last_name: last_name,
+          image_url: image_url,
           email: email,
           username: username,
         },
@@ -31,7 +31,6 @@ export const createOrUpdateUser = async (
     console.log("Error creating or updating user:", error);
   }
 };
-
 
 export const deleteUser = async (id: string) => {
   await connectDB(); // ✅ ensure DB connection
