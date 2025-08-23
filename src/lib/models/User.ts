@@ -17,7 +17,7 @@ const UserSchema: Schema<IUser> = new Schema(
     first_name: { type: String, required: true, unique: true },
     last_name: { type: String, required: true, unique: true },
     image_url: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true },
     username: { type: String, required: true, unique: true },
   },
   { timestamps: true }
