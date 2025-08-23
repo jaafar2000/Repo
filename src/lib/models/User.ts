@@ -2,16 +2,21 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IUser extends Document {
-  username: string;
+  first_name: string;
+  last_name: string;
+  image_url: string;
   email: string;
-  password: string; // hash later with bcrypt
+  username: string;
   createdAt: Date;
 }
 
 const UserSchema: Schema<IUser> = new Schema(
   {
+    first_name: { type: String, required: true, unique: true },
+    last_name: { type: String, required: true, unique: true },
+    image_url: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
     username: { type: String, required: true, unique: true },
-    email:    { type: String, required: true, unique: true },
   },
   { timestamps: true }
 );
