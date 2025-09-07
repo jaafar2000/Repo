@@ -2,40 +2,45 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Post from "@/lib/models/Post";
 import User from "@/lib/models/User";
-import mongoose from "mongoose";
 
 export async function POST(
   req: NextRequest,
-  context: { params: { postId: string } }
+  context: { params: Promise<{ postId: string }> }
 ) {
-  const { postId } = await context.params; //
+  const { postId } = await context.params;
 
   try {
     await connectDB();
     const { userId } = await req.json();
 
     const user = await User.findOne({ clerkId: userId });
-    const userObjectId = new mongoose.Types.ObjectId(user?._id);
-    const postToBeLiked = await Post.findById(postId);
-    let updatedPost;
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
-    if (postToBeLiked?.likes.includes(userObjectId)) {
+    const postToBeLiked = await Post.findById(postId);
+    if (!postToBeLiked) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    let updatedPost;
+    if (postToBeLiked.likes.includes(user._id)) {
       updatedPost = await Post.findByIdAndUpdate(
         postId,
-        { $pull: { likes: user?._id } },
+        { $pull: { likes: user._id } },
         { new: true }
       );
     } else {
       updatedPost = await Post.findByIdAndUpdate(
         postId,
-        { $push: { likes: user?._id } },
+        { $push: { likes: user._id } },
         { new: true }
       );
     }
 
-    return NextResponse.json(updatedPost?.likes?.length);
+    return NextResponse.json(updatedPost?.likes?.length ?? 0);
   } catch (err: any) {
-    console.error(err);
+    console.error("❌ Error in like/unlike:", err);
     return NextResponse.json(
       { error: err.message || "Server error" },
       { status: 500 }
@@ -44,15 +49,18 @@ export async function POST(
 }
 
 export async function DELETE(
-  request: NextRequest,
-  context: { params: { postId: string } }
+  req: NextRequest,
+  context: { params: Promise<{ postId: string }> }
 ) {
-  await connectDB();
-  try {
-    const { postId } = context.params;
-    console.log("from delete", postId);
+  const { postId } = await context.params;
 
-    await Post.findByIdAndDelete(postId);
+  try {
+    await connectDB();
+
+    const deleted = await Post.findByIdAndDelete(postId);
+    if (!deleted) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
 
     return NextResponse.json({ message: "Post deleted" }, { status: 200 });
   } catch (err: any) {
