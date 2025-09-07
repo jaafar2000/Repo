@@ -4,11 +4,11 @@ import User from "@/lib/models/User";
 
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string } }
+  context: { params: Promise<{ userId: string }> }
 ) {
   try {
     await connectDB();
-    const { userId } = await params;
+    const { userId } = await context.params;
 
     const user = await User.findById(userId);
     if (!user) {
@@ -25,10 +25,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  context: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { userId } = await params;
+    const { userId } = await context.params;
     const body = await request.json();
     const { cover } = body; // ✅ matches frontend
     console.log("PUT body:", cover);

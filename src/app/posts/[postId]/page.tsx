@@ -31,26 +31,26 @@ const Page = ({ params }: PostPageProps) => {
   }, [postId]);
 
   // Fetch replies to this post
-  const fetchReplies = async () => {
+  const fetchReplies = React.useCallback(async () => {
     const data = await fetchPosts();
 
     const filtered = data.filter((p: IPost) => {
       if (!p.parentPostId) return false;
 
-      // parentPostId might be a string or an object with _id
       const parentId =
         typeof p.parentPostId === "string"
           ? p.parentPostId
           : p.parentPostId._id;
+
       return parentId === postId;
     });
 
     setReplies(filtered);
-  };
-  useEffect(() => {
-    if (postId) fetchReplies();
-  }, []);
+  }, [postId]); // depends on postId
 
+  useEffect(() => {
+    fetchReplies();
+  }, [fetchReplies]);
   // Format date
   const formatPostDate = (dateString: string) => {
     const date = new Date(dateString);
