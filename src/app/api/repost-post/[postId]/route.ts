@@ -5,9 +5,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { postId: string } }
+  context: { params: Promise<{ postId: string }> }
 ) {
-  const { postId } = await params; // ✅ no await
+  const { postId } = await context.params; // ✅ no await
   try {
     await connectDB();
 
@@ -35,7 +35,6 @@ export async function POST(
     if (!post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
-
 
     return NextResponse.json({ post, originalPost }, { status: 201 });
   } catch (err) {
