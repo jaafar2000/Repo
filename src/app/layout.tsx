@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { dark } from "@clerk/themes";
+import { ImageKitProvider } from "@imagekit/next";
 
 import Left from "./components/Left";
 import Right from "./components/Right";
@@ -32,19 +33,21 @@ export default function RootLayout({
         baseTheme: dark,
       }}
     >
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <div className="flex flex-row w-[1400px] min-h-screen  mx-auto ">
-            <Left />
-            <div className="flex-1 flex justify-center items-center">
-              {children}
+      <ImageKitProvider urlEndpoint="https://ik.imagekit.io/phscexuyw">
+        <html lang="en">
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
+            <div className="flex flex-row max-w-[1200px] min-h-screen  mx-auto ">
+              <Left />
+              <div className="flex-1 flex ">
+                {children} 
+              </div>
+              <Right />
             </div>
-            <Right />
-          </div>
-        </body>
-      </html>
+          </body>
+        </html>
+      </ImageKitProvider>
     </ClerkProvider>
   );
 }
