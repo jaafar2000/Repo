@@ -49,7 +49,7 @@ const Page = ({ params }: PostPageProps) => {
   };
   useEffect(() => {
     if (postId) fetchReplies();
-  }, [postId]);
+  }, []);
 
   // Format date
   const formatPostDate = (dateString: string) => {

@@ -3,11 +3,12 @@ import { connectDB } from "@/lib/mongodb";
 import Post from "@/lib/models/Post";
 import User from "@/lib/models/User";
 import mongoose from "mongoose";
+
 export async function POST(
   req: NextRequest,
-  { params }: { params: { postId: string } }
+  context: { params: { postId: string } }
 ) {
-  const { postId } = await params; // no await
+  const { postId } = await context.params; //
 
   try {
     await connectDB();
@@ -21,14 +22,14 @@ export async function POST(
     if (postToBeLiked?.likes.includes(userObjectId)) {
       updatedPost = await Post.findByIdAndUpdate(
         postId,
-        { $pull: { likes: user?._id } }, 
-        { new: true } 
+        { $pull: { likes: user?._id } },
+        { new: true }
       );
     } else {
       updatedPost = await Post.findByIdAndUpdate(
         postId,
         { $push: { likes: user?._id } },
-        { new: true } 
+        { new: true }
       );
     }
 
@@ -44,11 +45,11 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { postId: string } }
+  context: { params: { postId: string } }
 ) {
   await connectDB();
   try {
-    const { postId } = params;
+    const { postId } = context.params;
     console.log("from delete", postId);
 
     await Post.findByIdAndDelete(postId);
