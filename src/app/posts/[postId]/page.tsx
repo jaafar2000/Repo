@@ -104,8 +104,10 @@ const Page = ({ params }: PostPageProps) => {
 
             {/* Image (if exists) */}
             {post.image && (
-              <img
+              <Image
                 src={post.image}
+                width={100}
+                height={100}
                 alt="Post media"
                 className="w-full rounded-xl border border-[#2f3336] mb-4"
               />

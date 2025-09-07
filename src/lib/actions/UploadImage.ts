@@ -1,8 +1,5 @@
 import {
-  ImageKitAbortError,
-  ImageKitInvalidRequestError,
-  ImageKitServerError,
-  ImageKitUploadNetworkError,
+
   upload,
 } from "@imagekit/next";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Heart,
   MessageCircle,
@@ -19,11 +19,10 @@ interface Props {
   comments?: IPost[];
   repost?: () => void;
   setRepost?: (text: string) => void;
-  noOfRepostedTime? : number
+  noOfRepostedTime?: number;
 }
 
 const PostActions: React.FC<Props> = ({
-  likes = [],
   _id,
   repost,
   setRepost,
@@ -32,7 +31,6 @@ const PostActions: React.FC<Props> = ({
 }) => {
   const { user } = useUser();
 
-  const [isLiked, setIsLiked] = useState<boolean>(false);
   const [likesCount, setLikesCount] = useState<number>(0);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -50,9 +48,9 @@ const PostActions: React.FC<Props> = ({
       }
 
       const data = await res.json();
-      console.log(data)
-      setLikesCount(data)
-      console.log(data)
+      console.log(data);
+      setLikesCount(data);
+      console.log(data);
     } catch (error) {
       console.error("Error in toggleLike:", error);
     }
@@ -87,14 +85,8 @@ const PostActions: React.FC<Props> = ({
           className="flex flex-row gap-2 items-center cursor-pointer"
           onClick={toggleLike}
         >
-          <Heart
-            size={20}
-            stroke={isLiked ? "#d35355" : "white"}
-            fill={isLiked ? "#d35355" : "none"}
-          />
-          <span className={isLiked ? "text-red-400" : "text-white"}>
-            {likesCount}
-          </span>
+          <Heart size={20} />
+          <span className={"text-white"}>{likesCount}</span>
         </div>
 
         {/* Stats (dummy for now) */}

@@ -1,33 +1,16 @@
 "use client";
-import { UserButton } from "@clerk/nextjs";
 import React, { useState } from "react";
 import { Search } from "lucide-react";
 import WhoToFollow from "./WhoToFollow";
 const Right = () => {
-  const [trends, setTrends] = useState([
+  const trends = [
     { title: "React", tweets: "45.1K" },
     { title: "Tailwind CSS", tweets: "28.9K" },
     { title: "JavaScript", tweets: "72.3K" },
     { title: "Web Development", tweets: "60.5K" },
-  ]);
+  ];
 
-  const [whoToFollow, setWhoToFollow] = useState([
-    {
-      name: "Google",
-      username: "google",
-      imageUrl: "https://placehold.co/40x40/FFFFFF/000000?text=G",
-    },
-    {
-      name: "OpenAI",
-      username: "openai",
-      imageUrl: "https://placehold.co/40x40/4CAF50/FFFFFF?text=AI",
-    },
-    {
-      name: "Vercel",
-      username: "vercel",
-      imageUrl: "https://placehold.co/40x40/000000/FFFFFF?text=V",
-    },
-  ]);
+
   return (
     <div className=" hidden  w-[30%] p-4 md:flex flex-col justify-between border-l border-[#2f3336]">
       <div>
@@ -49,7 +32,7 @@ const Right = () => {
         {/* What's happening section */}
         <div className="p-2 overflow-hidden border-[#2f3336] border-1 rounded-xl">
           <div className="p-3 font-extrabold text-xl text-gray-900 dark:text-white">
-            What's happening
+            What&apos;s happening
           </div>
           {trends.map((trend, index) => (
             <div

@@ -12,6 +12,7 @@ interface ProfilePageProps {
     profileId: string;
   }>;
 }
+import Image from "next/image";
 
 const Page = ({ params }: ProfilePageProps) => {
   const { user } = useUser();
@@ -50,7 +51,7 @@ const Page = ({ params }: ProfilePageProps) => {
       );
       setPosts(filtered);
     });
-  }, [profileData]);
+  }, [profileData, profileId]);
 
   // Handle file change
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,7 +123,7 @@ const Page = ({ params }: ProfilePageProps) => {
             id="cover-file"
           />
           {profileData?.cover && (
-            <img
+            <Image
               src={profileData.cover}
               alt="Cover"
               className="object-cover w-full h-full"
@@ -138,7 +139,7 @@ const Page = ({ params }: ProfilePageProps) => {
           )}
 
           {/* Profile Image */}
-          <img
+          <Image
             src={profileData?.image_url}
             alt="Profile"
             className="w-32 h-32 rounded-full border-4 border-black absolute -bottom-16 left-4"
@@ -162,7 +163,7 @@ const Page = ({ params }: ProfilePageProps) => {
             >
               <X size={20} />
             </button>
-            <img
+            <Image
               src={previewUrl}
               alt="Preview"
               className="w-full h-48 object-cover rounded-lg mb-4"

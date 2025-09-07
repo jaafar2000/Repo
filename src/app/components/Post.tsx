@@ -128,10 +128,12 @@ const Post: React.FC<PostProps> = ({ onPostCreated, type, postId }) => {
 
         {previewUrl && (
           <div className="relative mt-2 rounded-lg overflow-hidden">
-            <img
+            <Image
               src={previewUrl}
               alt="Image Preview"
               className="w-full max-h-[400px] object-cover rounded-lg"
+              width={100}
+              height={100}
             />
             <button
               type="button"

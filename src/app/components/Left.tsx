@@ -22,7 +22,9 @@ import {
   Ellipsis,
   Share2,
 } from "lucide-react";
+
 const Left = () => {
+
   const [userId, setUserId] = useState<string | null>(null);
 
   const { user } = useUser();
@@ -43,7 +45,7 @@ const Left = () => {
     };
 
     fetchUserid();
-  }, [user?.id]);
+  }, [user]);
 
   const style = "flex  gap-4 p-3 rounded-4xl items-center text-xl ";
   const styleSpan = "hidden md:block";
