@@ -22,12 +22,10 @@ import {
   Ellipsis,
   Share2,
 } from "lucide-react";
-
 const Left = () => {
-
   const [userId, setUserId] = useState<string | null>(null);
-
   const { user } = useUser();
+
   useEffect(() => {
     if (!user) return;
 
@@ -87,8 +85,18 @@ const Left = () => {
         <ClerkLoading>Loading...</ClerkLoading>
         <ClerkLoaded>
           <SignedOut>
-            <SignInButton />
-            <SignUpButton />
+            <div className=" flex flex-col md:flex-row gap-1">
+              <div
+                className={`px-4 py-2 rounded-full bg-white  cursor-pointer  font-bold text-black transition-opacity duration-200`}
+              >
+                <SignInButton />
+              </div>
+              <div
+                className={`px-4 py-2 rounded-full border-1 border-[#2f3336]  cursor-pointer  font-bold text-white transition-opacity duration-200`}
+              >
+                <SignUpButton />
+              </div>
+            </div>
           </SignedOut>
           <SignedIn>
             <div className="flex p-2 gap-2 items-center ">
