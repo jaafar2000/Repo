@@ -15,7 +15,7 @@ const Right = () => {
     <div className=" hidden  w-[30%] p-4 md:flex flex-col justify-between border-l border-[#2f3336]">
       <div>
         {/* Search Bar */}
-        <div className="sticky top-0 z-10 py-2">
+        <div className="sticky top-0 z-5 py-2">
           <div className="relative flex items-center w-full px-4 rounded-full border border-gray-300 dark:border-gray-600">
             <Search
               size={20}
