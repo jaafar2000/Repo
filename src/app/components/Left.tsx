@@ -53,7 +53,7 @@ const Left = () => {
   const styleActive = "text-white";
 
   return (
-    <div className="flex absolute bottom-0 bg-black  md:flex-col w-full md:w-[20%] border-r border-[#2f3336] p-2 md:p-4">
+    <div className="flex absolute bottom-0 bg-black md:relative  md:flex-col w-full md:w-[20%] border-r border-[#2f3336] p-2 md:p-4">
       {/* Top Icons */}
       <div className="flex md:flex-col md:gap-6 flex-row gap-4 flex-1 items-center md:items-start justify-center md:justify-start">
         <div className="p-1 md:p-3 cursor-pointer hover:bg-gray-700 rounded-full">
