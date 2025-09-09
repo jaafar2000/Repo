@@ -6,7 +6,6 @@ import Image from "next/image";
 import { ImageUp } from "lucide-react";
 import UploadImage from "@/lib/actions/UploadImage";
 
-// The prop type for the parent component callback
 type PostProps = {
   onPostCreated: () => void;
   postId: string;
@@ -20,7 +19,6 @@ const Post: React.FC<PostProps> = ({ onPostCreated, type, postId }) => {
   const [isPosting, setIsPosting] = useState<boolean>(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   // Handle file selection and create local preview URL
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -105,8 +103,16 @@ const Post: React.FC<PostProps> = ({ onPostCreated, type, postId }) => {
     postText.trim() !== "" || fileInputRef.current?.files?.[0];
 
   return (
-    <div className="flex w-full border-b border-[#2f3336] flex-row items-start px-4 py-4 gap-3">
-      <form onSubmit={handleSubmit} className="flex flex-col justify-center w-full gap-4">
+    <div className="flex w-full relative border-b border-[#2f3336] flex-row items-start px-4 py-4 gap-3">
+      {isPosting && (
+        <div className=" absolute w-full h-full top-0 flex items-center justify-center left-0 z-10 bg-black/80 ">
+          <span className="loaderSpinner"></span>
+        </div>
+      )}
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col justify-center w-full gap-4"
+      >
         <div className="flex flex-row items-start gap-3">
           <div className="relative h-12 w-12 rounded-full overflow-hidden">
             <Image
@@ -162,7 +168,8 @@ const Post: React.FC<PostProps> = ({ onPostCreated, type, postId }) => {
             htmlFor="file"
             className="  flex p-2 rounded-full cursor-pointer transition-colors duration-200"
           >
-            <ImageUp /> <span className="text-gray-100 px-1 " >Upload Image</span>
+            <ImageUp />{" "}
+            <span className="text-gray-100 px-1 ">Upload Image</span>
           </label>
           <button
             type="submit"

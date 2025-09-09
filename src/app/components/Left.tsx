@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   SignInButton,
@@ -27,18 +27,25 @@ const Left = () => {
   const { user } = useUser();
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) return; // don’t run if no user yet
 
     const fetchUserid = async () => {
       try {
         const res = await fetch("/api/user");
+        if (!res.ok) throw new Error("Failed to fetch /api/user");
+
         const { data } = await res.json();
+        console.log("data from left:", data);
+
         const UserMongooID = data.find(
           (item: any) => item?.clerkId === user.id
         );
-        setUserId(UserMongooID?._id);
+
+        console.log("matched user:", UserMongooID);
+
+        setUserId(UserMongooID?._id || null);
       } catch (err) {
-        console.error(err);
+        console.error("fetchUserid error:", err);
       }
     };
 
@@ -48,8 +55,8 @@ const Left = () => {
   const style = "flex  gap-4 p-3 rounded-4xl items-center text-xl ";
   const styleSpan = "hidden md:block";
   return (
-    <div className="  md:w-[20%] border-[#2f3336] border-r-1   p-2 flex flex-col">
-      <div className="icons flex-1 flex flex-col md:gap-5 ">
+    <div className="flex flex-row  md:flex-col md:w-[20%] border-[#2f3336] border-r-1   p-2">
+      <div className="icons flex-1 flex md:flex-col md:gap-5 ">
         <div className="p-3">
           <Link href={"/"}>
             <Share2 size={35} />
@@ -73,9 +80,11 @@ const Left = () => {
           <Bookmark size={29} /> <span className={styleSpan}>Bookmarks</span>
         </div>
         <div className={style}>
-          <Users size={29} /> <span className={styleSpan}>Communities</span>
+          <Link href={"/users"} className="flex flex-row gap-4 ">
+            <Users size={29} /> <span className={styleSpan}>Users</span>
+          </Link>
         </div>
-        {user && (
+        {user && userId && (
           <Link href={`/profile/${userId}`} className={style}>
             <User size={29} /> <span className={styleSpan}>Profile </span>
           </Link>

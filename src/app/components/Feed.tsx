@@ -8,6 +8,8 @@ const Feed = ({
   posts: any[];
   fetchPosts: () => void;
 }) => {
+
+
   return (
     <div>
       {posts && posts.length > 0 ? (

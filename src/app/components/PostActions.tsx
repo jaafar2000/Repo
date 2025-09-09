@@ -12,7 +12,7 @@ import {
 import { useUser } from "@clerk/nextjs";
 import { IPost } from "@/lib/models/Post";
 import { IUser } from "@/lib/models/User";
-
+import Link from "next/link";
 interface Props {
   likes?: (IUser | string)[]; // can be populated IUser or ObjectId string
   _id: string;
@@ -34,27 +34,25 @@ const PostActions: React.FC<Props> = ({
   const [likesCount, setLikesCount] = useState<number>(0);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const toggleLike = async () => {
-    try {
-      const res = await fetch(`/api/posts/${_id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user?.id, postId: _id }),
-      });
+const toggleLike = async () => {
+  try {
+    const res = await fetch(`/api/posts/${_id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user?.id, postId: _id }),
+    });
 
-      if (!res.ok) {
-        console.error("❌ Error liking post");
-        return;
-      }
-
-      const data = await res.json();
-      console.log(data);
-      setLikesCount(data);
-      console.log(data);
-    } catch (error) {
-      console.error("Error in toggleLike:", error);
+    if (!res.ok) {
+      console.error("❌ Error liking post");
+      return;
     }
-  };
+
+    const { likesCount } = await res.json();
+    setLikesCount(likesCount);
+  } catch (error) {
+    console.error("Error in toggleLike:", error);
+  }
+};
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -68,7 +66,9 @@ const PostActions: React.FC<Props> = ({
       <div className="icons text-sm text-gray-400 py-2 flex justify-between w-full">
         {/* Comments */}
         <div className="flex flex-row gap-2 items-center cursor-pointer">
-          <MessageCircle size={20} /> <span>{comments.length}</span>
+          <Link href={`/posts/${_id}`} className="flex flex-row gap-1" >
+            <MessageCircle size={20} /> <span>{comments.length}</span>
+          </Link>
         </div>
 
         {/* Repost */}

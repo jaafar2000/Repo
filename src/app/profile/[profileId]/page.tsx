@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, use } from "react";
 import { ArrowLeft, CalendarDays, X } from "lucide-react";
 import fetchPosts from "@/lib/actions/fetchPosts";
 import Feed from "@/app/components/Feed";
@@ -7,18 +7,20 @@ import EditProfileButton from "@/app/components/EditProfileButton";
 import UploadImage from "@/lib/actions/UploadImage";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
+import Image from "next/image";
+
 interface ProfilePageProps {
   params: Promise<{
     profileId: string;
   }>;
 }
-import Image from "next/image";
 
 const Page = ({ params }: ProfilePageProps) => {
   const { user } = useUser();
-  const { profileId } = use(params); // ✅ unwrap params
+  const { profileId } = React.use(params);
+
   const [profileData, setProfileData] = useState<any>(null);
-  const [posts, setPosts] = useState<[]>([]);
+  const [posts, setPosts] = useState<any[]>([]);
   const tabs = ["Posts", "Replies", "Highlights", "Articles", "Media", "Likes"];
   const [active, setActive] = useState("Posts");
 
@@ -36,7 +38,7 @@ const Page = ({ params }: ProfilePageProps) => {
         const { data } = await res.json();
         setProfileData(data);
       } catch (err) {
-        console.error("Error fetching profile:", err);
+        console.error("❌ Error fetching profile:", err);
       }
     };
 
@@ -51,7 +53,7 @@ const Page = ({ params }: ProfilePageProps) => {
       );
       setPosts(filtered);
     });
-  }, [profileData, profileId]);
+  }, [profileId]);
 
   // Handle file change
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,8 +101,12 @@ const Page = ({ params }: ProfilePageProps) => {
     setPreviewUrl(null);
   };
 
+  if (!profileData) {
+    return <span className="loader"></span>;
+  }
+
   return (
-    <div className="w-full h-screen overflow-y-scroll hide-scrollbar ">
+    <div className="w-full h-screen overflow-y-scroll hide-scrollbar">
       {/* HEADER */}
       <div className="sticky top-0 z-10 flex items-center border-b border-[#2f3336] py-4 text-xl font-bold backdrop-blur-[20px] backdrop-saturate-[180%] bg-black/60">
         <Link href="/" className="z-10">
@@ -126,6 +132,8 @@ const Page = ({ params }: ProfilePageProps) => {
             <Image
               src={profileData.cover}
               alt="Cover"
+              width={800}
+              height={192}
               className="object-cover w-full h-full"
             />
           )}
@@ -140,15 +148,20 @@ const Page = ({ params }: ProfilePageProps) => {
 
           {/* Profile Image */}
           <Image
-            src={profileData?.image_url}
+            src={profileData?.image_url || "/default-avatar.png"}
             alt="Profile"
-            className="w-32 h-32 rounded-full border-4 border-black absolute -bottom-16 left-4"
+            width={128}
+            height={128}
+            className="w-32 h-32 rounded-full border-4 border-black absolute -bottom-16 left-4 object-cover"
           />
         </div>
 
         {/* Edit Profile Button */}
-
-        <div className={`flex justify-end items-center p-4  ${profileData?.clerkId === user?.id ? "" : "py-6"}  `}>
+        <div
+          className={`flex justify-end items-center p-4 ${
+            profileData?.clerkId === user?.id ? "" : "py-6"
+          }`}
+        >
           {profileData?.clerkId === user?.id && <EditProfileButton />}
         </div>
       </div>
@@ -156,18 +169,22 @@ const Page = ({ params }: ProfilePageProps) => {
       {/* MODAL PREVIEW */}
       {previewUrl && (
         <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-          <div className="bg-black border-1 border-[#2f3336] rounded-xl p-10 relative w-[90%] max-w-lg">
+          <div className="bg-black border border-[#2f3336] rounded-xl p-10 relative w-[90%] max-w-lg">
             <button
               onClick={() => setPreviewUrl(null)}
               className="absolute top-3 right-3 text-gray-400 hover:text-white"
             >
               <X size={20} />
             </button>
-            <Image
-              src={previewUrl}
-              alt="Preview"
-              className="w-full h-48 object-cover rounded-lg mb-4"
-            />
+            {previewUrl && (
+              <Image
+                src={previewUrl}
+                alt="Preview"
+                width={600}
+                height={192}
+                className="w-full h-48 object-cover rounded-lg mb-4"
+              />
+            )}
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setPreviewUrl(null)}
@@ -193,24 +210,26 @@ const Page = ({ params }: ProfilePageProps) => {
           {profileData?.first_name} {profileData?.last_name}
         </p>
         <p className="text-sm text-gray-400">@{profileData?.username}</p>
-        <p className="text-gray-400 my-4 flex items-center">
-          <CalendarDays size={18} className="inline mr-1" />
-          Joined{" "}
-          {new Date(profileData?.createdAt).toLocaleDateString("en-US", {
-            month: "long",
-            year: "numeric",
-          })}
-        </p>
+        {profileData?.createdAt && (
+          <p className="text-gray-400 my-4 flex items-center">
+            <CalendarDays size={18} className="inline mr-1" />
+            Joined{" "}
+            {new Date(profileData.createdAt).toLocaleDateString("en-US", {
+              month: "long",
+              year: "numeric",
+            })}
+          </p>
+        )}
         <div className="text-gray-400">
           <span className="mr-4">
             <span className="font-bold text-white">
-              {profileData?.following?.length}
+              {profileData?.following?.length || 0}
             </span>{" "}
             Following
           </span>
           <span>
             <span className="font-bold text-white">
-              {profileData?.followers?.length}
+              {profileData?.followers?.length || 0}
             </span>{" "}
             Followers
           </span>

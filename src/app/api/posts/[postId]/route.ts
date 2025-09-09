@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Post from "@/lib/models/Post";
 import User from "@/lib/models/User";
-
 export async function POST(
   req: NextRequest,
   context: { params: Promise<{ postId: string }> }
@@ -38,7 +37,9 @@ export async function POST(
       );
     }
 
-    return NextResponse.json(updatedPost?.likes?.length ?? 0);
+    return NextResponse.json({
+      likesCount: updatedPost?.likes?.length ?? 0,
+    });
   } catch (err: any) {
     console.error("❌ Error in like/unlike:", err);
     return NextResponse.json(
