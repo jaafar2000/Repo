@@ -142,7 +142,7 @@ const Page = ({ params }: PostPageProps) => {
           <Feed posts={replies} fetchPosts={fetchReplies} />
         </div>
       ) : (
-        <div>np p</div>
+        <div className=" w-full h-full flex items-center justify-center " ><span className="loaderSpinner" /></div>
       )}
     </>
   );
