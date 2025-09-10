@@ -21,7 +21,6 @@ const Post: React.FC<PostProps> = ({
   const [postText, setPostText] = useState<string>("");
   const { user } = useUser();
   const [isPosting, setIsPosting] = useState<boolean>(false);
-  // Use local state for the image preview
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -155,9 +154,11 @@ const Post: React.FC<PostProps> = ({
         {previewUrl  && (
           <div className="flex justify-center mt-4">
             <div className="relative rounded-lg overflow-hidden bg-black/20 p-2">
-              <img
+              <Image
                 src={previewUrl}
                 alt="Preview"
+                width={100}
+                height={100}
                 className="max-w-[500px] max-h-[400px] object-contain rounded-lg"
               />
               <button

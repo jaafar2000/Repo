@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState, use } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft, CalendarDays, X } from "lucide-react";
 import fetchPosts from "@/lib/actions/fetchPosts";
 import Feed from "@/app/components/Feed";
