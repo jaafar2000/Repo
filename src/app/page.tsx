@@ -22,7 +22,7 @@ const Page = () => {
       <div className="sticky top-0 z-10 flex items-center border-b-1 border-[#2f3336] py-4 text-xl font-bold backdrop-blur-[20px] backdrop-saturate-[180%] bg-black/60">
         <h2 className="text-white px-3">Feed</h2>
       </div>
-      <Post onPostCreated={fetch} postId={""} type={"What's happening?"} />
+      <Post onPostCreated={fetch} postId={""} isModal={false} type={"What's happening?"} key={"post-feed"} />
       <Feed posts={posts} fetchPosts={fetch} />
     </div>
   );

@@ -53,7 +53,7 @@ const Left = () => {
   const styleActive = "text-white";
 
   return (
-    <div className="flex absolute bottom-0 bg-black md:relative  md:flex-col w-full md:w-[20%] border-r border-[#2f3336] p-2 md:p-4">
+    <div className="flex    md:flex-col w-full md:w-[20%] border-r border-[#2f3336] p-2 md:p-4">
       {/* Top Icons */}
       <div className="flex md:flex-col md:gap-6 flex-row gap-4 flex-1 items-center md:items-start justify-center md:justify-start">
         <div className="p-1 md:p-3 cursor-pointer hover:bg-gray-700 rounded-full">
@@ -63,25 +63,30 @@ const Left = () => {
         </div>
 
         {/* Menu Items */}
-        <div
-          className={`${style} ${active === "Home" ? styleActive : ""}`}
-          onClick={() => setActive("Home")}
-        >
-          <House size={26} /> <span className={styleSpan}>Home</span>
-        </div>
+        <Link href={"/"}>
+          <div
+            className={`${style} ${active === "Home" ? styleActive : ""}`}
+            onClick={() => setActive("Home")}
+          >
+            <House size={26} /> <span className={styleSpan}>Home</span>
+          </div>
+        </Link>
 
-        <div
-          className={`${style} ${active === "Search" ? styleActive : ""}`}
-          onClick={() => setActive("Search")}
-        >
-          <Search size={26} /> <span className={styleSpan}>Search</span>
-        </div>
+        <Link href={"/search"}>
+          <div
+            className={`${style} ${active === "Search" ? styleActive : ""}`}
+            onClick={() => setActive("Search")}
+          >
+            <Search size={26} /> <span className={styleSpan}>Search</span>
+          </div>
+        </Link>
 
         <div
           className={`${style} ${active === "Messages" ? styleActive : ""}`}
           onClick={() => setActive("Messages")}
         >
-          <MessageCircle size={26} /> <span className={styleSpan}>Messages</span>
+          <MessageCircle size={26} />{" "}
+          <span className={styleSpan}>Messages</span>
         </div>
 
         <Link
@@ -102,6 +107,13 @@ const Left = () => {
             <span className={styleSpan}>Profile</span>
           </Link>
         )}
+
+        <Link
+          href={"/create-post"}
+          className="bg-white w-full text-black text-center font-bold py-2 rounded-3xl"
+        >
+          Post
+        </Link>
       </div>
 
       {/* Auth Buttons / User Info */}

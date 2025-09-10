@@ -102,7 +102,7 @@ const Page = ({ params }: ProfilePageProps) => {
   };
 
   if (!profileData) {
-    return <span className="loader"></span>;
+    return <span className="loaderSpinner"></span>;
   }
 
   return (
@@ -244,7 +244,7 @@ const Page = ({ params }: ProfilePageProps) => {
             onClick={() => setActive(tab)}
             className={`flex-1 py-3 hover:bg-gray-800 transition-colors ${
               active === tab
-                ? "text-white border-b-2 border-blue-500"
+                ? "text-white border-b-2 border-white"
                 : "text-gray-400"
             }`}
           >

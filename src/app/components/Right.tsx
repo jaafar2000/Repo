@@ -2,6 +2,7 @@
 import React from "react";
 import { Search } from "lucide-react";
 import WhoToFollow from "./WhoToFollow";
+import Link from "next/link";
 const Right = () => {
   const trends = [
     { title: "React", tweets: "45.1K" },
@@ -10,23 +11,20 @@ const Right = () => {
     { title: "Web Development", tweets: "60.5K" },
   ];
 
-
   return (
     <div className=" hidden  w-[30%] p-4 md:flex flex-col justify-between border-l border-[#2f3336]">
       <div>
         {/* Search Bar */}
-        <div className="sticky top-0 z-5 py-2">
-          <div className="relative flex items-center w-full px-4 rounded-full border border-gray-300 dark:border-gray-600">
-            <Search
-              size={20}
-              className="text-gray-500 dark:text-gray-400 mr-2"
-            />
-            <input
-              type="text"
-              placeholder="Search"
-              className="w-full h-10 bg-transparent text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none"
-            />
-          </div>
+        <div className="py-2">
+          <Link href="/search">
+            <div className=" flex items-center justify-center w-full py-2 px-4 rounded-full bg-white text-black ">
+              <Search
+                size={20}
+                className="text-gray-500 dark:text-gray-400 mr-2"
+              />
+              Search
+            </div>
+          </Link>
         </div>
 
         {/* What's happening section */}

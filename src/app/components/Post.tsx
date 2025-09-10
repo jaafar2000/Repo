@@ -1,25 +1,30 @@
+// components/Post.tsx
+
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-
+// Remove this line: import { useImageStore } from "@/lib/actions/imagePreview";
 import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { ImageUp } from "lucide-react";
 import UploadImage from "@/lib/actions/UploadImage";
-
 type PostProps = {
   onPostCreated: () => void;
-  postId: string;
-  type: string;
+  postId?: string;
+  type?: string;
 };
 
-const Post: React.FC<PostProps> = ({ onPostCreated, type, postId }) => {
-  console.log("posts parentid", postId);
+const Post: React.FC<PostProps> = ({
+  onPostCreated,
+  type,
+  postId,
+}) => {
   const [postText, setPostText] = useState<string>("");
   const { user } = useUser();
   const [isPosting, setIsPosting] = useState<boolean>(false);
+  // Use local state for the image preview
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // Handle file selection and create local preview URL
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -30,30 +35,23 @@ const Post: React.FC<PostProps> = ({ onPostCreated, type, postId }) => {
     }
   };
 
-  // Handle the file upload to ImageKit
   const handleUpload = async (): Promise<string | null> => {
     const file = fileInputRef.current?.files?.[0];
-
     if (!file) {
       console.log("No file selected");
       return null;
     }
-
-    // ✅ Ensure it’s a real File before passing to UploadImage
     if (!(file instanceof File)) {
       console.error("Invalid file type:", file);
       return null;
     }
-
-    const imageUrl = await UploadImage(file); // pass raw File, not object
+    const imageUrl = await UploadImage(file);
     return imageUrl;
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsPosting(true);
-
     try {
       const finalImageUrl = await handleUpload();
 
@@ -68,21 +66,17 @@ const Post: React.FC<PostProps> = ({ onPostCreated, type, postId }) => {
             parentPostId: postId,
           }),
         });
-
         if (!res.ok) {
           console.error("❌ Error Posting");
         }
       }
-
-      // Reset the form
       setPostText("");
+      // Reset the local state after posting
       setPreviewUrl(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
       setIsPosting(false);
-
-      // Notify the parent component
       onPostCreated();
     } catch (err) {
       console.error("Error in handleSubmit:", err);
@@ -90,7 +84,6 @@ const Post: React.FC<PostProps> = ({ onPostCreated, type, postId }) => {
     }
   };
 
-  // Cleanup object URL on component unmount
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -105,7 +98,7 @@ const Post: React.FC<PostProps> = ({ onPostCreated, type, postId }) => {
   return (
     <div className="flex w-full relative border-b border-[#2f3336] flex-row items-start px-4 py-4 gap-3">
       {isPosting && (
-        <div className=" absolute w-full h-full top-0 flex items-center justify-center left-0 z-10 bg-black/80 ">
+        <div className="absolute w-full h-full top-0 flex items-center justify-center left-0 z-10 bg-black/80">
           <span className="loaderSpinner"></span>
         </div>
       )}
@@ -124,38 +117,13 @@ const Post: React.FC<PostProps> = ({ onPostCreated, type, postId }) => {
             />
           </div>
           <input
-            className=" text-white text-2xl outline-none bg-transparent flex-1 placeholder-gray-500 pt-2"
+            className="text-white text-2xl outline-none bg-transparent flex-1 placeholder-gray-500 pt-2"
             type="text"
             value={postText}
             onChange={(e) => setPostText(e.target.value)}
             placeholder={type}
           />
         </div>
-
-        {previewUrl && (
-          <div className="relative mt-2 rounded-lg overflow-hidden">
-            <Image
-              src={previewUrl}
-              alt="Image Preview"
-              className="w-full max-h-[400px] object-cover rounded-lg"
-              width={100}
-              height={100}
-            />
-            <button
-              type="button"
-              onClick={() => {
-                setPreviewUrl(null);
-                if (fileInputRef.current) {
-                  fileInputRef.current.value = "";
-                }
-              }}
-              className="absolute top-2 right-2 p-1 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
-            >
-              &times;
-            </button>
-          </div>
-        )}
-
         <div className="flex flex-row items-center justify-between px-3">
           <input
             id="file"
@@ -166,10 +134,10 @@ const Post: React.FC<PostProps> = ({ onPostCreated, type, postId }) => {
           />
           <label
             htmlFor="file"
-            className="  flex p-2 rounded-full cursor-pointer transition-colors duration-200"
+            className="flex p-2 rounded-full cursor-pointer transition-colors duration-200"
           >
-            <ImageUp />{" "}
-            <span className="text-gray-100 px-1 ">Upload Image</span>
+            <ImageUp />
+            <span className="text-gray-100 px-1">Upload Image</span>
           </label>
           <button
             type="submit"
@@ -177,12 +145,34 @@ const Post: React.FC<PostProps> = ({ onPostCreated, type, postId }) => {
             className={`px-4 py-2 rounded-full font-bold text-black transition-opacity duration-200 ${
               isPosting || !formIsValid
                 ? "bg-gray-500 cursor-not-allowed"
-                : "bg-white  cursor-pointer "
+                : "bg-white cursor-pointer"
             }`}
           >
             {isPosting ? "Posting..." : "Post"}
           </button>
         </div>
+        {/* Only show the image preview if a file has been selected */}
+        {previewUrl  && (
+          <div className="flex justify-center mt-4">
+            <div className="relative rounded-lg overflow-hidden bg-black/20 p-2">
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className="max-w-[500px] max-h-[400px] object-contain rounded-lg"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setPreviewUrl(null);
+                  if (fileInputRef.current) fileInputRef.current.value = "";
+                }}
+                className="absolute top-3 right-3 px-2 rounded-full bg-black/60 text-white hover:bg-black/80"
+              >
+                &times;
+              </button>
+            </div>
+          </div>
+        )}
       </form>
     </div>
   );

@@ -41,7 +41,7 @@ export default function RootLayout({
             <div className=" flex-col flex md:flex-row max-w-[1200px] min-h-screen  mx-auto ">
               <Left />
               <div className="flex-1 flex ">
-                {children} 
+                {children}
               </div>
               <Right />
             </div>
