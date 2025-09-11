@@ -129,8 +129,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostCreated, type }) => {
             </p>
 
             {/* body */}
-            <p className="text-lg font-thin">{body}</p>
-
+            <Link href={`/posts/${_id}`}>
+              <p className="text-lg font-thin">{body}</p>
+            </Link>
             {/* reposted post (original) */}
             {rootPost && (
               <div className="mt-2 border border-[#2f3336] p-3 rounded-xl text-sm">
@@ -146,8 +147,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostCreated, type }) => {
                   />
                   <div>
                     <p className="font-bold">
-                      {rootPost.author?.first_name}{" "}
-                      {rootPost.author?.last_name}{" "}
+                      {rootPost.author?.first_name} {rootPost.author?.last_name}{" "}
                       <span className="text-gray-500">
                         @{rootPost.author?.username ?? "unknown"}
                       </span>

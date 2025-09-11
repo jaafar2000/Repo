@@ -11,10 +11,10 @@ import {
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { IPost } from "@/lib/models/Post";
-import { IUser } from "@/lib/models/User";
 import Link from "next/link";
+
 interface Props {
-  likes?: (IUser | string)[]; // can be populated IUser or ObjectId string
+  likes?: (string | any)[]; // can be IUser objects or string IDs
   _id: string;
   comments?: IPost[];
   repost?: () => void;
@@ -27,87 +27,87 @@ const PostActions: React.FC<Props> = ({
   repost,
   setRepost,
   comments = [],
-  noOfRepostedTime,
+  noOfRepostedTime = 0,
+  likes = [],
 }) => {
   const { user } = useUser();
+  const [likesCount, setLikesCount] = useState<number>(likes.length);
+  const [isRepostOpen, setIsRepostOpen] = useState<boolean>(false);
 
-  const [likesCount, setLikesCount] = useState<number>(0);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const handleLike = async () => {
+    if (!user) return;
 
-const toggleLike = async () => {
-  try {
-    const res = await fetch(`/api/posts/${_id}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user?.id, postId: _id }),
-    });
+    try {
+      const res = await fetch(`/api/posts/${_id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id }),
+      });
 
-    if (!res.ok) {
-      console.error("❌ Error liking post");
-      return;
+      if (!res.ok) throw new Error("Failed to like post");
+
+      const data = await res.json();
+      setLikesCount(data.likesCount); // update from DB
+    } catch (err) {
+      console.error("Error liking post:", err);
     }
+  };
 
-    const { likesCount } = await res.json();
-    setLikesCount(likesCount);
-  } catch (error) {
-    console.error("Error in toggleLike:", error);
-  }
-};
-
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
+  const openRepostModal = () => setIsRepostOpen(true);
+  const closeRepostModal = () => setIsRepostOpen(false);
 
   return (
     <>
-      {isOpen && (
-        <div className="fixed inset-0 bg-black/80 z-40" onClick={closeModal} />
+      {isRepostOpen && (
+        <div className="fixed inset-0 bg-black/80 z-40" onClick={closeRepostModal} />
       )}
 
-      <div className="icons text-sm text-gray-400 py-2 flex justify-between w-full">
+      <div className="flex justify-between items-center text-gray-400 text-sm py-2 w-full">
         {/* Comments */}
-        <div className="flex flex-row gap-2 items-center cursor-pointer">
-          <Link href={`/posts/${_id}`} className="flex flex-row gap-1" >
-            <MessageCircle size={20} /> <span>{comments.length}</span>
-          </Link>
-        </div>
+        <Link
+          href={`/posts/${_id}`}
+          className="flex items-center gap-1 cursor-pointer hover:text-white transition-colors"
+        >
+          <MessageCircle size={20} /> <span>{comments.length}</span>
+        </Link>
 
         {/* Repost */}
         <button
-          className="flex gap-2 items-center cursor-pointer"
-          onClick={openModal}
+          className="flex items-center gap-1 cursor-pointer hover:text-green-500 transition-colors"
+          onClick={openRepostModal}
         >
           <Repeat2 size={20} />
-          <span> {noOfRepostedTime} </span>
+          <span>{noOfRepostedTime}</span>
         </button>
 
         {/* Likes */}
         <div
-          className="flex flex-row gap-2 items-center cursor-pointer"
-          onClick={toggleLike}
+          className="flex items-center gap-1 cursor-pointer transition-colors"
+          onClick={handleLike}
         >
           <Heart size={20} />
-          <span className={"text-white"}>{likesCount}</span>
+          <span>{likesCount}</span>
         </div>
 
-        {/* Stats (dummy for now) */}
-        <div className="flex flex-row gap-2 items-center">
+        {/* Stats placeholder */}
+        <div className="flex items-center gap-1 text-gray-400">
           <ChartNoAxesColumn size={20} /> <span>5.7K</span>
         </div>
 
         {/* Bookmark */}
-        <div className="flex flex-row gap-2 items-center cursor-pointer">
+        <div className="flex items-center gap-1 cursor-pointer hover:text-yellow-400 transition-colors">
           <Bookmark size={20} />
         </div>
       </div>
 
       {/* Repost Modal */}
-      {isOpen && (
-        <div className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-black border-1 border-[#2f3336] rounded-xl p-6 shadow-lg">
+      {isRepostOpen && (
+        <div className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-black border border-[#2f3336] rounded-xl p-6 shadow-lg">
           <div className="flex justify-end">
             <CircleX
               size={24}
               className="cursor-pointer hover:text-red-500"
-              onClick={closeModal}
+              onClick={closeRepostModal}
             />
           </div>
           <h2 className="text-lg font-semibold text-white mb-4">Repost</h2>
@@ -116,7 +116,7 @@ const toggleLike = async () => {
             onSubmit={(e) => {
               e.preventDefault();
               repost?.();
-              closeModal();
+              closeRepostModal();
             }}
           >
             <input
@@ -127,7 +127,7 @@ const toggleLike = async () => {
             />
             <button
               type="submit"
-              className="bg-gray-100 hover:bg-white text-black cursor-pointer transition-colors  py-2 rounded-lg font-medium"
+              className="bg-gray-100 hover:bg-white text-black cursor-pointer transition-colors py-2 rounded-lg font-medium"
             >
               Repost
             </button>

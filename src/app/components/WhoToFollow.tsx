@@ -19,7 +19,7 @@ interface Props {
   isRightSide: boolean;
 }
 
-const WhoToFollow = ({ isRightSide }: Props) => {
+const WhoToFollow: React.FC<Props> = ({ isRightSide }) => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [current, setCurrent] = useState<IUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -103,7 +103,7 @@ const WhoToFollow = ({ isRightSide }: Props) => {
 
   // derive which users to display
   const displayedUsers = isRightSide ? users.slice(0, 3) : users;
-  console.log(displayedUsers)
+  console.log(displayedUsers);
 
   return (
     <div>

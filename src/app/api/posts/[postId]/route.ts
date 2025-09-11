@@ -2,40 +2,34 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Post from "@/lib/models/Post";
 import User from "@/lib/models/User";
+
 export async function POST(
   req: NextRequest,
-  context: { params: Promise<{ postId: string }> }
+  context: { params: { postId: string } }
 ) {
-  const { postId } = await context.params;
+  const { postId } = context.params;
 
   try {
     await connectDB();
     const { userId } = await req.json();
 
     const user = await User.findOne({ clerkId: userId });
-    if (!user) {
+    if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
 
     const postToBeLiked = await Post.findById(postId);
-    if (!postToBeLiked) {
+    if (!postToBeLiked)
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
-    }
 
-    let updatedPost;
-    if (postToBeLiked.likes.includes(user._id)) {
-      updatedPost = await Post.findByIdAndUpdate(
-        postId,
-        { $pull: { likes: user._id } },
-        { new: true }
-      );
-    } else {
-      updatedPost = await Post.findByIdAndUpdate(
-        postId,
-        { $push: { likes: user._id } },
-        { new: true }
-      );
-    }
+    const alreadyLiked = postToBeLiked.likes.some((id) => id.equals(user._id));
+
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      alreadyLiked
+        ? { $pull: { likes: user._id } }
+        : { $push: { likes: user._id } },
+      { new: true }
+    );
 
     return NextResponse.json({
       likesCount: updatedPost?.likes?.length ?? 0,
