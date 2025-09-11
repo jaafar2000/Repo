@@ -3,7 +3,9 @@ import React from "react";
 import { Search } from "lucide-react";
 import WhoToFollow from "./WhoToFollow";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 const Right = () => {
+  const { user } = useUser();
   const trends = [
     { title: "React", tweets: "45.1K" },
     { title: "Tailwind CSS", tweets: "28.9K" },
@@ -54,11 +56,20 @@ const Right = () => {
           <div className="p-3 font-extrabold text-xl text-gray-900 dark:text-white">
             Who to follow
           </div>
-          <WhoToFollow />
-
-          <div className="p-3 text-blue-500 cursor-pointer hover:text-blue-600">
-            Show more
-          </div>
+          {user ? (
+            <>
+              <WhoToFollow isRightSide={true} />
+              <Link href={"/users"}>
+                <div className="p-3 text-blue-500 cursor-pointer hover:text-blue-600">
+                  Show more
+                </div>
+              </Link>
+            </>
+          ) : (
+            <div className="px-4 py-4 text-gray-500 dark:text-gray-400">
+              Log in to show users
+            </div>
+          )}
         </div>
       </div>
 

@@ -15,7 +15,11 @@ interface IUser {
   following: string[];
 }
 
-const WhoToFollow = () => {
+interface Props {
+  isRightSide: boolean;
+}
+
+const WhoToFollow = ({ isRightSide }: Props) => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [current, setCurrent] = useState<IUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -49,22 +53,17 @@ const WhoToFollow = () => {
     }
   }, [isLoaded, user, fetchUsers]);
 
-  // ... (rest of the component)
-
   const Follow = async (id: string) => {
     if (!current) {
       console.error("Current user not loaded.");
       return;
     }
 
-    // Use the correct array: current.following
     const isCurrentlyFollowing = current.following.includes(id);
 
-    // Optimistic UI update for the `users` list
     setUsers((prevUsers) =>
       prevUsers.map((u) => {
         if (u._id === id) {
-          // Update the followed user's followers list
           const newFollowers = isCurrentlyFollowing
             ? u.followers.filter((followerId) => followerId !== current._id)
             : [...u.followers, current._id];
@@ -74,13 +73,11 @@ const WhoToFollow = () => {
       })
     );
 
-    // Optimistic UI update for the `current` user
     setCurrent((prevCurrent) => {
       if (!prevCurrent) return null;
       const newFollowing = isCurrentlyFollowing
         ? prevCurrent.following.filter((followingId) => followingId !== id)
         : [...prevCurrent.following, id];
-      // Correctly update the `following` property
       return { ...prevCurrent, following: newFollowing };
     });
 
@@ -96,30 +93,28 @@ const WhoToFollow = () => {
       }
     } catch (err: any) {
       console.error("Error following:", err.message);
-      // Revert UI on error
       fetchUsers();
     }
   };
 
-  // ... (rest of the component)
   if (loading) {
     return <div>Loading users...</div>;
   }
 
-  console.log("current User" + current?.username);
-
-  console.log("users" + users);
+  // derive which users to display
+  const displayedUsers = isRightSide ? users.slice(0, 3) : users;
+  console.log(displayedUsers)
 
   return (
     <div>
-      {users.length === 0 ? (
+      {displayedUsers.length === 0 ? (
         <div className="p-3 text-center text-gray-500 dark:text-gray-400">
           No users to follow at the moment.
         </div>
       ) : (
-        users.map((user, index) => (
+        displayedUsers.map((user) => (
           <div
-            key={index}
+            key={user._id}
             className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-800"
           >
             <div className="flex items-center space-x-3">
@@ -152,8 +147,7 @@ const WhoToFollow = () => {
                   : "bg-black text-white dark:bg-white dark:text-black"
               }`}
             >
-              {" "}
-              {current?.following.includes(user._id) ? "UnFollow" : "follow"}
+              {current?.following.includes(user._id) ? "UnFollow" : "Follow"}
             </button>
           </div>
         ))

@@ -9,8 +9,8 @@ import {
   UserButton,
   ClerkLoaded,
   ClerkLoading,
+  useUser,
 } from "@clerk/nextjs";
-import { useUser } from "@clerk/nextjs";
 import {
   House,
   Search,
@@ -19,12 +19,15 @@ import {
   User,
   Ellipsis,
   Share2,
+  Menu,
+  PlusCircle,
 } from "lucide-react";
 
 const Left = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const { user } = useUser();
   const [active, setActive] = useState<string>("Home");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!user) return;
@@ -35,9 +38,7 @@ const Left = () => {
         if (!res.ok) throw new Error("Failed to fetch /api/user");
 
         const { data } = await res.json();
-        const UserMongooID = data.find(
-          (item: any) => item?.clerkId === user.id
-        );
+        const UserMongooID = data.find((item: any) => item?.clerkId === user.id);
         setUserId(UserMongooID?._id || null);
       } catch (err) {
         console.error("fetchUserid error:", err);
@@ -47,76 +48,83 @@ const Left = () => {
     fetchUserid();
   }, [user]);
 
-  const style =
+  const menuItemStyle =
     "flex gap-3 md:gap-4 p-2 md:p-3 items-center text-lg md:text-xl text-gray-400 w-fit cursor-pointer hover:text-white transition-colors rounded-md";
-  const styleSpan = "hidden md:block";
-  const styleActive = "text-white";
+  const menuItemText = "hidden md:block";
+  const activeStyle = "text-white";
 
   return (
-    <div className="flex    md:flex-col w-full md:w-[20%] border-r border-[#2f3336] p-2 md:p-4">
-      {/* Top Icons */}
-      <div className="flex md:flex-col md:gap-6 flex-row gap-4 flex-1 items-center md:items-start justify-center md:justify-start">
-        <div className="p-1 md:p-3 cursor-pointer hover:bg-gray-700 rounded-full">
-          <Link href={"/"}>
-            <Share2 size={30} />
-          </Link>
+    <div className="flex justify-between border-b border-[#2f3336] md:flex-col w-full md:w-[20%] md:h-screen md:border-r p-2 md:p-4">
+      {/* Top Logo/Menu */}
+      <div className="flex items-center md:justify-start gap-2 p-1 md:p-3">
+        <Link href={"/"} className="hidden md:block cursor-pointer hover:bg-gray-700 rounded-full p-2">
+          <Share2 size={30} />
+        </Link>
+        {/* Mobile Menu Button */}
+        <div className="block md:hidden cursor-pointer hover:bg-gray-700 rounded-full p-2" onClick={() => setIsOpen(!isOpen)}>
+          <Menu size={30} />
         </div>
+      </div>
 
-        {/* Menu Items */}
+      {/* Menu Items */}
+      <div
+        className={`absolute top-20 left-0  z-50 w-0 md:relative md:w-full flex flex-col md:gap-6 md:overflow-visible overflow-hidden transition-all duration-300 ${
+          isOpen ? "w-screen p-4 bg-black "  : "w-0 p-0"
+        } md:max-h-full`}
+      >
         <Link href={"/"}>
           <div
-            className={`${style} ${active === "Home" ? styleActive : ""}`}
+            className={`${menuItemStyle} ${active === "Home" ? activeStyle : ""}`}
             onClick={() => setActive("Home")}
           >
-            <House size={26} /> <span className={styleSpan}>Home</span>
+            <House size={26} /> <span className={menuItemText}>Home</span>
           </div>
         </Link>
 
         <Link href={"/search"}>
           <div
-            className={`${style} ${active === "Search" ? styleActive : ""}`}
+            className={`${menuItemStyle} ${active === "Search" ? activeStyle : ""}`}
             onClick={() => setActive("Search")}
           >
-            <Search size={26} /> <span className={styleSpan}>Search</span>
+            <Search size={26} /> <span className={menuItemText}>Search</span>
           </div>
         </Link>
 
         <div
-          className={`${style} ${active === "Messages" ? styleActive : ""}`}
+          className={`${menuItemStyle} ${active === "Messages" ? activeStyle : ""}`}
           onClick={() => setActive("Messages")}
         >
-          <MessageCircle size={26} />{" "}
-          <span className={styleSpan}>Messages</span>
+          <MessageCircle size={26} /> <span className={menuItemText}>Messages</span>
         </div>
 
         <Link
           href={"/users"}
-          className={`${style} ${active === "Users" ? styleActive : ""}`}
+          className={`${menuItemStyle} ${active === "Users" ? activeStyle : ""}`}
           onClick={() => setActive("Users")}
         >
-          <Users size={26} /> <span className={styleSpan}>Users</span>
+          <Users size={26} /> <span className={menuItemText}>Users</span>
         </Link>
 
         {user && userId && (
           <Link
             href={`/profile/${userId}`}
-            className={`${style} ${active === "Profile" ? styleActive : ""}`}
+            className={`${menuItemStyle} ${active === "Profile" ? activeStyle : ""}`}
             onClick={() => setActive("Profile")}
           >
-            <User size={26} />
-            <span className={styleSpan}>Profile</span>
+            <User size={26} /> <span className={menuItemText}>Profile</span>
           </Link>
         )}
 
+        {/* Post Button */}
         <Link
           href={"/create-post"}
-          className="bg-white w-full text-black text-center font-bold py-2 rounded-3xl"
+          className="flex items-center justify-center gap-2 bg-white text-black font-bold py-2 px-4 rounded-3xl hover:bg-gray-200 transition-colors mt-2"
         >
-          Post
+          <PlusCircle size={20} /> <span>Post</span>
         </Link>
       </div>
 
-      {/* Auth Buttons / User Info */}
+      {/* Auth / User Info */}
       <div className="mt-2 md:mt-auto flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
         <ClerkLoading>Loading...</ClerkLoading>
         <ClerkLoaded>
@@ -125,23 +133,21 @@ const Left = () => {
               <div className="px-4 py-2 rounded-full bg-white cursor-pointer font-bold text-black text-center">
                 <SignInButton />
               </div>
-              <div className="px-4 py-2 rounded-full border border-[#2f3336] cursor-pointer font-bold text-white text-center">
-                <SignUpButton />
-              </div>
+
             </div>
           </SignedOut>
           <SignedIn>
             <div className="flex items-center gap-2 md:gap-3 p-2 md:p-0">
               <UserButton />
               <div className="flex flex-col">
-                <span className={styleSpan}>
+                <span className={menuItemText}>
                   {user?.firstName} {user?.lastName}
                 </span>
-                <span className={`text-sm text-gray-500 ${styleSpan}`}>
+                <span className={`text-sm text-gray-500 ${menuItemText}`}>
                   @{user?.username}
                 </span>
               </div>
-              <Ellipsis className={`text-gray-400 ${styleSpan}`} />
+              <Ellipsis className={`text-gray-400 ${menuItemText}`} />
             </div>
           </SignedIn>
         </ClerkLoaded>
