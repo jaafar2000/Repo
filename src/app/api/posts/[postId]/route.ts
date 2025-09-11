@@ -5,9 +5,9 @@ import User from "@/lib/models/User";
 
 export async function POST(
   req: NextRequest,
-  context: { params: { postId: string } }
+  context: { params: Promise<{ postId: string }> }
 ) {
-  const { postId } = context.params;
+  const { postId } = await context.params;
 
   try {
     await connectDB();
