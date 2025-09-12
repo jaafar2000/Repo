@@ -53,6 +53,10 @@ const Page = ({ params }: ProfilePageProps) => {
 
       let filteredPosts;
       switch (active) {
+        case "Posts":
+          filteredPosts = filtered.filter((p: any) => p.parentPostId === null);
+          break;
+        case "Articles":
         case "Media":
           filteredPosts = filtered.filter((p: any) => p.image);
           break;
