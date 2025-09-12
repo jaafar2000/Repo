@@ -4,24 +4,19 @@ import PostCard from "./PostCard";
 const Feed = ({
   posts,
   fetchPosts,
-  active,
+  active
 }: {
   posts: any[];
   fetchPosts: () => void;
-  FromProfile: boolean;
-  active: string;
+  FromProfile: boolean
+  active: string
 }) => {
   return (
     <div>
       {posts && posts.length > 0 ? (
         posts.map((post: any) => (
           <div key={post._id} className="border-b border-[#2f3336] p-4">
-            <PostCard
-              active={active}
-              type="root"
-              onPostCreated={fetchPosts}
-              post={post}
-            />
+            <PostCard  active={active}  type="root" onPostCreated={fetchPosts} post={post} />
           </div>
         ))
       ) : (

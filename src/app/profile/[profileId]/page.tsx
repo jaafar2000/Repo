@@ -21,7 +21,7 @@ const Page = ({ params }: ProfilePageProps) => {
 
   const [profileData, setProfileData] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
-  const tabs = ["Posts", "Replies", "Shared", "Articles", "Media"];
+  const tabs = ["Posts", "Shared", "Articles", "Media"];
   const [active, setActive] = useState("Posts");
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -53,9 +53,6 @@ const Page = ({ params }: ProfilePageProps) => {
 
       let filteredPosts;
       switch (active) {
-        case "Replies":
-          filteredPosts = filtered.filter((p: any) => p.parentPostId);
-          break;
         case "Media":
           filteredPosts = filtered.filter((p: any) => p.image);
           break;
@@ -278,7 +275,12 @@ const Page = ({ params }: ProfilePageProps) => {
       </div>
 
       {/* FEED */}
-      <Feed FromProfile={true} active={active} posts={posts} fetchPosts={fetchPosts} />
+      <Feed
+        FromProfile={true}
+        active={active}
+        posts={posts}
+        fetchPosts={fetchPosts}
+      />
     </div>
   );
 };
