@@ -25,6 +25,7 @@ type PostCardProps = {
   onPostCreated: () => void;
   type: string;
   active: string;
+  FromProfile?: boolean
 };
 
 const PostCard: React.FC<PostCardProps> = ({
