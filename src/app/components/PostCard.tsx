@@ -96,7 +96,7 @@ const PostCard: React.FC<PostCardProps> = ({
         <p className="my-3 text-sm text-gray-500">
           Reply to{" "}
           <span className="text-blue-400 mr-2">
-            @{parentPostId?.author?.username ?? "unknown"}'s
+            @{parentPostId?.author?.username ?? "unknown"}&apos;s
           </span>
           <Link href={`/posts/${parentPostId?._id}`}>post</Link>
         </p>
