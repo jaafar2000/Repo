@@ -18,10 +18,10 @@ const PostSchema: Schema<IPost> = new Schema(
     body: { type: String },
     image: { type: String },
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    parentPostId: { type: Schema.Types.ObjectId, ref: "Post" },
+    parentPostId: { type: Schema.Types.ObjectId, ref: "Post", default: null },
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    comments: [{ type: Schema.Types.ObjectId, ref: "Post" }],
-    reposted: { type: Schema.Types.ObjectId, ref: "Post" },
+    comments: [{ type: Schema.Types.ObjectId, ref: "Post" , default: null}],
+    reposted: { type: Schema.Types.ObjectId, ref: "Post", default: null },
     noOfRepostedTimes: { type: Number },
   },
   { timestamps: true }

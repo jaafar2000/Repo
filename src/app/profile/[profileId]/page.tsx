@@ -21,7 +21,7 @@ const Page = ({ params }: ProfilePageProps) => {
 
   const [profileData, setProfileData] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
-  const tabs = ["Posts", "Replies", "Highlights", "Articles", "Media", "Likes"];
+  const tabs = ["Posts", "Replies", "Shared", "Articles", "Media"];
   const [active, setActive] = useState("Posts");
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -45,15 +45,35 @@ const Page = ({ params }: ProfilePageProps) => {
     fetchProfileData();
   }, [profileId]);
 
-  // Fetch posts
   useEffect(() => {
     fetchPosts().then((data) => {
       const filtered = data.filter(
         (post: any) => post.author._id === profileId
       );
-      setPosts(filtered);
+
+      let filteredPosts;
+      switch (active) {
+        case "Replies":
+          filteredPosts = filtered.filter((p: any) => p.parentPostId);
+          break;
+        case "Media":
+          filteredPosts = filtered.filter((p: any) => p.image);
+          break;
+        case "Articles":
+          filteredPosts = filtered.filter(
+            (p: any) => p.body && p.body.trim() !== ""
+          );
+          break;
+        case "Shared":
+          filteredPosts = filtered.filter((p: any) => p.reposted);
+          break;
+        default:
+          filteredPosts = filtered;
+      }
+
+      setPosts(filteredPosts);
     });
-  }, [profileId]);
+  }, [profileId, active]);
 
   // Handle file change
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,7 +122,11 @@ const Page = ({ params }: ProfilePageProps) => {
   };
 
   if (!profileData) {
-    return <span className="loaderSpinner"></span>;
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <span className="loaderSpinner"></span>
+      </div>
+    );
   }
 
   return (
@@ -254,7 +278,7 @@ const Page = ({ params }: ProfilePageProps) => {
       </div>
 
       {/* FEED */}
-      <Feed posts={posts} fetchPosts={fetchPosts} />
+      <Feed FromProfile={true} active={active} posts={posts} fetchPosts={fetchPosts} />
     </div>
   );
 };

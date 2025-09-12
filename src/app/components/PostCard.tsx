@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { act, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Trash } from "lucide-react";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { IPost } from "@/lib/models/Post";
 import { IUser } from "@/lib/models/User";
 import { useUser } from "@clerk/nextjs";
 import PostActions from "./PostActions";
-
+import { usePathname } from "next/navigation";
 type PopulatedPost = Omit<IPost, "author" | "_id" | "username"> & {
   _id: string;
   author?: IUser | null;
@@ -24,12 +24,19 @@ type PostCardProps = {
   post: PopulatedPost;
   onPostCreated: () => void;
   type: string;
+  active: string;
 };
 
-const PostCard: React.FC<PostCardProps> = ({ post, onPostCreated, type }) => {
+const PostCard: React.FC<PostCardProps> = ({
+  post,
+  active,
+  onPostCreated,
+  type,
+}) => {
   const { user } = useUser();
   const [isDeleting, setIsDeleting] = useState(false);
   const [repost, setRepost] = useState("");
+  const pathname = usePathname();
 
   const {
     _id,
@@ -38,10 +45,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostCreated, type }) => {
     createdAt,
     comments = [],
     likes = [],
-    parentPostId,
     reposted,
     author,
     noOfRepostedTimes,
+    parentPostId,
   } = post;
 
   // original post if this is a repost
@@ -53,6 +60,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostCreated, type }) => {
   const image_url = author?.image_url ?? "/default-avatar.png";
   const first_name = author?.first_name ?? "";
   const last_name = author?.last_name ?? "";
+  const id = author?._id ?? "";
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -84,35 +92,39 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostCreated, type }) => {
   return (
     <>
       {isDeleting && <div className="loader w-full"></div>}
-
-      {parentPostId && (
+      {pathname.slice(1, 8) === "profile" && active === "Replies" && (
         <p className="my-3 text-sm text-gray-500">
           Reply to{" "}
-          <span className="text-blue-400">@{username ?? "unknown"}</span>
+          <span className="text-blue-400 mr-2">
+            @{parentPostId?.author?.username ?? "unknown"}'s
+          </span>
+          <Link href={`/posts/${parentPostId?._id}`}>post</Link>
         </p>
       )}
-
       {/* Main wrapper */}
       <div className="flex items-start mb-2">
         {/* avatar */}
-        <Image
-          src={image_url}
-          alt={`${first_name} ${last_name}`}
-          width={40}
-          height={40}
-          className="w-10 h-10 rounded-full mr-3"
-        />
-
+        <Link href={`/profile/${id}`}>
+          <Image
+            src={image_url}
+            alt={`${first_name} ${last_name}`}
+            width={40}
+            height={40}
+            className="w-10 h-10 rounded-full mr-3"
+          />
+        </Link>
         {/* main content */}
         <div className="flex flex-col w-full">
           <div>
             {/* header */}
-            <p className="font-bold flex items-start">
+            <p className="font-bold flex items-center">
               {first_name} {last_name}{" "}
-              <span className="text-sm text-gray-500 ml-1 font-thin">
-                @{username}
-              </span>
-              <span className="text-sm text-gray-500 font-thin">
+              <Link href={`/profile/${id}`}>
+                <span className="text-sm text-gray-300 underline ml-1 font-thin">
+                  @{username}
+                </span>
+              </Link>
+              <span className="text-sm text-gray-400 font-thin">
                 {" "}
                 ·{" "}
                 {createdAt
@@ -130,7 +142,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostCreated, type }) => {
 
             {/* body */}
             <Link href={`/posts/${_id}`}>
-              <p className="text-lg font-thin">{body}</p>
+              <p className="text-lg break-words py-2">
+                {body.length > 150 ? `${body.slice(0, 150)}...` : body}
+              </p>
             </Link>
             {/* reposted post (original) */}
             {rootPost && (
@@ -146,21 +160,32 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostCreated, type }) => {
                     className="w-8 h-8 rounded-full mr-2"
                   />
                   <div>
-                    <p className="font-bold">
-                      {rootPost.author?.first_name} {rootPost.author?.last_name}{" "}
-                      <span className="text-gray-500">
-                        @{rootPost.author?.username ?? "unknown"}
+                    <p className="font-bold flex items-center justify-between">
+                      <span>
+                        {rootPost.author?.first_name}{" "}
+                        {rootPost.author?.last_name}{" "}
+                        <Link href={`/profile/${rootPost.author?._id}`}>
+                          <span className="text-sm text-gray-300 underline ml-1 font-thin">
+                            @{rootPost.author?.username ?? "unknown"}
+                          </span>
+                        </Link>
                       </span>
+
+                      <Link href={`/posts/${rootPost._id}`}>
+                        <span className="text-sm text-gray-300 underline ml-1 font-thin">
+                          Show full post
+                        </span>
+                      </Link>
                     </p>
                     <p>{rootPost.body}</p>
                     {rootPost.image && (
-                      <div className="mt-2 rounded-lg overflow-hidden">
+                      <div className=" h-[400px] w-fit rounded-xl   overflow-hidden flex items-center justify-start bg-black">
                         <Image
-                          src={rootPost.image}
-                          alt="Repost image"
-                          width={400}
-                          height={600}
-                          className="w-full object-contain rounded-lg"
+                          src={rootPost.image || "/placeholder.png"}
+                          alt="Post media"
+                          width={1000}
+                          height={1000}
+                          className=" h-full w-fit "
                         />
                       </div>
                     )}
@@ -172,14 +197,14 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostCreated, type }) => {
             {/* normal post image (if not repost) */}
             {!rootPost && image && (
               <Link href={`/posts/${_id}`}>
-                <div className="mt-2 flex justify-start">
-                  <div className="rounded-lg overflow-hidden">
+                <div className="my-2 flex justify-start">
+                  <div className=" h-[400px] w-fit rounded-xl   overflow-hidden flex items-center justify-start bg-black">
                     <Image
                       src={image}
-                      alt="Post image"
-                      width={500}
-                      height={800}
-                      className="w-full max-h-[60vh] object-contain rounded-lg"
+                      alt="Post media"
+                      width={1000}
+                      height={1000}
+                      className=" h-full w-fit "
                     />
                   </div>
                 </div>

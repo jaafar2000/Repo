@@ -40,7 +40,7 @@ export default function RootLayout({
           >
             <div className="flex-col flex md:flex-row max-w-[1200px] h-screen mx-auto">
               <Left />
-              <div className="flex-1 flex">{children}</div>
+              <div className="flex-1 overflow-x-hidden flex">{children}</div>
               <Right />
             </div>
           </body>

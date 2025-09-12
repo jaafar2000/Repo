@@ -153,13 +153,13 @@ const Post: React.FC<PostProps> = ({
         {/* Only show the image preview if a file has been selected */}
         {previewUrl  && (
           <div className="flex justify-center mt-4">
-            <div className="relative rounded-lg overflow-hidden bg-black/20 p-2">
+            <div className="relative rounded-lg w-full overflow-hidden bg-black/20 p-2">
               <Image
                 src={previewUrl}
                 alt="Preview"
                 width={100}
                 height={100}
-                className="max-w-[500px] max-h-[400px] object-contain rounded-lg"
+                className="  w-full object-contain rounded-lg"
               />
               <button
                 type="button"

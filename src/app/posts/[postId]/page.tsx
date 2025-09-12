@@ -104,30 +104,31 @@ const Page = ({ params }: PostPageProps) => {
 
             {/* Image (if exists) */}
             {post.image && (
-              <Image
-                src={post.image}
-                width={100}
-                height={100}
-                alt="Post media"
-                className="w-full rounded-xl border border-[#2f3336] mb-4"
-              />
+              <div className=" h-[400px] w-fit rounded-xl   overflow-hidden flex items-center justify-start bg-black">
+                <Image
+                  src={post.image || "/placeholder.png"}
+                  alt="Post media"
+                  width={1000}
+                  height={1000}
+                  className=" h-full w-fit "
+                />
+              </div>
             )}
 
             {/* Date */}
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-gray-500 mt-3 mb-4">
               {formatPostDate(post.createdAt)}
             </p>
-
-            {/* Actions */}
-            <div className=" flex items-center border-t-1 border-b-1   border-[#2f3336] bx-2">
-              <PostActions
-                repost={() => {
-                  return;
-                }}
-                likes={post?.likes}
-                _id={post?._id}
-              />
-            </div>
+          </div>
+          {/* Actions */}
+          <div className=" flex items-center px-4 border-t-1 border-b-1  border-[#2f3336] bx-2">
+            <PostActions
+              repost={() => {
+                return;
+              }}
+              likes={post?.likes}
+              _id={post?._id}
+            />
           </div>
           <span className="text-gray-600 ml-5">
             Replying to{" "}
@@ -139,10 +140,17 @@ const Page = ({ params }: PostPageProps) => {
             type={"Post Your Reply"}
           />
 
-          <Feed posts={replies} fetchPosts={fetchReplies} />
+          <Feed
+            active=""
+            FromProfile={false}
+            posts={replies}
+            fetchPosts={fetchReplies}
+          />
         </div>
       ) : (
-        <div className=" w-full h-full flex items-center justify-center " ><span className="loaderSpinner" /></div>
+        <div className=" w-full h-full flex items-center justify-center ">
+          <span className="loaderSpinner" />
+        </div>
       )}
     </>
   );

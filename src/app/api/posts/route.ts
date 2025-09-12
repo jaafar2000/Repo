@@ -38,6 +38,8 @@ export async function GET() {
         ],
       })
       .sort({ createdAt: -1 });
+    // const finalPosts = posts.filter((p) => p.parentPostId === null);
+
     return NextResponse.json(posts, { status: 200 });
   } catch (err: any) {
     console.error("❌ Error fetching posts:", err);

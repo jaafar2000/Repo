@@ -33,6 +33,7 @@ const PostActions: React.FC<Props> = ({
   const { user } = useUser();
   const [likesCount, setLikesCount] = useState<number>(likes.length);
   const [isRepostOpen, setIsRepostOpen] = useState<boolean>(false);
+  const [liked, setLiked] = useState<boolean>(false);
 
   const handleLike = async () => {
     if (!user) return;
@@ -48,6 +49,8 @@ const PostActions: React.FC<Props> = ({
 
       const data = await res.json();
       setLikesCount(data.likesCount); // update from DB
+      console.log("data from liked", data)
+      setLiked(data.isLiked);
     } catch (err) {
       console.error("Error liking post:", err);
     }
@@ -59,10 +62,13 @@ const PostActions: React.FC<Props> = ({
   return (
     <>
       {isRepostOpen && (
-        <div className="fixed inset-0 bg-black/80 z-40" onClick={closeRepostModal} />
+        <div
+          className="fixed inset-0 bg-black/80 z-40"
+          onClick={closeRepostModal}
+        />
       )}
 
-      <div className="flex justify-between items-center text-gray-400 text-sm py-2 w-full">
+      <div className="flex justify-between  items-center text-gray-400 text-sm py-2 w-full">
         {/* Comments */}
         <Link
           href={`/posts/${_id}`}
@@ -85,7 +91,10 @@ const PostActions: React.FC<Props> = ({
           className="flex items-center gap-1 cursor-pointer transition-colors"
           onClick={handleLike}
         >
-          <Heart size={20} />
+          <Heart
+            size={20}
+            className={liked ? "text-white fill-white" : ""}
+          />
           <span>{likesCount}</span>
         </div>
 

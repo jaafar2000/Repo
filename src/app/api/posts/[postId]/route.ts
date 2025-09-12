@@ -33,6 +33,7 @@ export async function POST(
 
     return NextResponse.json({
       likesCount: updatedPost?.likes?.length ?? 0,
+      isLiked: !alreadyLiked,
     });
   } catch (err: any) {
     console.error("❌ Error in like/unlike:", err);

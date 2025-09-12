@@ -104,6 +104,7 @@ const Page = () => {
             results.posts.map((p) => (
               <li key={p._id} className="p-2 border-b border-[#2f3336]">
                 <PostCard
+                  FromProfile={false}
                   post={p}
                   onPostCreated={() => {
                     return;
